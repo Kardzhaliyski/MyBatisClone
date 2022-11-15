@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias alias="Employee" type="homeworks.basic.java49.models.Employee"/>
+        <typeAlias alias="Job" type="homeworks.basic.java49.models.Job"/>
+        <typeAlias alias="Department" type="homeworks.basic.java49.models.Department"/>
+        <typeAlias alias="Location" type="homeworks.basic.java49.models.Location"/>
+        <typeAlias alias="Country" type="homeworks.basic.java49.models.Country"/>
+    </typeAliases>
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED" >
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+        <environment id="development2">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <mapper class="mybatisclone.dao.mappers.EmployeeAnnotationMapper"/>
+        <mapper resource="src/main/resources/config/EmployeеXMLMapper.xml"/>
+    </mappers>
+</configuration>

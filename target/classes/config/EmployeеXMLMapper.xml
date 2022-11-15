@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="homeworks.orm.java53.mappers.EmployeeXMLMapper">
+    <select id="getEmployeeById" resultMap="fullEmployeeMap">
+        SELECT
+        e.*,
+        j.*,
+        m.employee_id manager_id,
+        m.first_name manager_first_name,
+        m.last_name manager_last_name,
+        m.email manager_email,
+        m.phone_number manager_phone_number,
+        m.hire_date manager_hire_date,
+        m.job_id manager_job_id,
+        m.salary manager_salary,
+        m.manager_id manager_manager_id,
+        m.department_id manager_department_id,
+        d.*,
+        l.*,
+        c.*
+        FROM
+        employees e
+        JOIN
+        jobs j ON e.job_id = j.job_id
+        JOIN
+        departments d ON e.department_id = d.department_id
+        JOIN
+        locations l ON d.location_id = l.location_id
+        JOIN
+        countries c ON l.country_id = c.country_id
+        JOIN
+        employees m ON e.manager_id = m.employee_id
+        WHERE
+        e.employee_id = #{arg0};
+    </select>
+
+    <select id="getSimpleEmployeeById" resultType="mybatisclone.models.Employee">
+        SELECT * FROM employees WHERE employee_id = #{arg0}
+    </select>
+
+    <select id="getAllEmployees" resultType="mybatisclone.models.Employee">
+        SELECT * FROM employees;
+    </select>
+
+    <select id="getEmployeesByJob" resultType="mybatisclone.models.Employee">
+        SELECT * FROM employees WHERE job_id = #{arg0}
+    </select>
+
+    <select id="employeeCount" resultType="java.lang.Long">
+        SELECT Count(*) FROM employees
+    </select>
+
+    <insert id="addEmployee" parameterType="Employee" useGeneratedKeys="true" keyProperty="employeeId">
+        INSERT INTO
+            employees(
+                first_name,
+                last_name,
+                email,
+                hire_date,
+                phone_number,
+                salary)
+        VALUES (
+                #{firstName},
+                #{lastName},
+                #{email},
+                #{hireDate},
+                #{phoneNumber},
+                #{salary})
+    </insert>
+
+    <delete id="deleteEmployee" parameterType="java.lang.Integer">
+        DELETE FROM employees WHERE employee_id = #{arg0}
+    </delete>
+
+    <update id="updateEmployee" >
+        UPDATE
+            employees
+        SET
+            first_name = #{firstName},
+            last_name = #{lastName},
+            email = #{email},
+            phone_number = #{phoneNumber},
+            hire_date = #{hireDate},
+            salary = #{salary}
+        WHERE
+            employee_id = #{employeeId};
+    </update>
+
+    <update id="updateEmployeeSalaries">
+        UPDATE employees SET salary = salary * #{arg0} WHERE salary &lt; #{arg1}
+    </update>
+
+    <resultMap id="fullEmployeeMap" type="Employee">
+        <result property="employeeId" column="employee_id"/>
+        <result property="firstName" column="first_name"/>
+        <result property="lastName" column="last_name"/>
+        <result property="email" column="email"/>
+        <result property="hireDate" column="hire_date"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="salary" column="salary"/>
+        <association property="job" javaType="Job">
+            <id property="jobId" column="job_id"/>
+            <result property="jobTitle" column="job_title"/>
+            <result property="minSalary" column="min_salary"/>
+            <result property="maxSalary" column="max_salary"/>
+        </association>
+        <association property="manager" resultMap="managerMap"/>
+        <association property="department" resultMap="departmentMap"/>
+    </resultMap>
+
+    <resultMap id="managerMap" type="Employee">
+        <result property="employeeId" column="manager_employee_id"/>
+        <result property="firstName" column="manager_first_name"/>
+        <result property="lastName" column="manager_last_name"/>
+        <result property="email" column="manager_email"/>
+        <result property="hireDate" column="manager_hire_date"/>
+        <result property="phoneNumber" column="manager_phone_number"/>
+        <result property="salary" column="manager_salary"/>
+    </resultMap>
+
+    <resultMap id="departmentMap" type="Department">
+        <id property="departmentId" column="department_id"/>
+        <result property="name" column="department_name"/>
+        <association property="location" resultMap="locationMap"/>
+    </resultMap>
+
+    <resultMap id="locationMap" type="Location">
+        <constructor>
+            <idArg column="location_id" javaType="_int"/>
+            <arg column="street_address" javaType="string"/>
+            <arg column="postal_code" javaType="string"/>
+            <arg column="city" javaType="string"/>
+            <arg column="state_province" javaType="string"/>
+            <arg resultMap="countryMap" javaType="Country"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="countryMap" type="Country">
+    </resultMap>
+</mapper>
